@@ -21,23 +21,17 @@ import shutil
 import subprocess
 import sys
 
-# Parse the version from the shapely module
-for line in open('shapely/__init__.py', 'rb'):
-    if line.find("__version__") >= 0:
-        version = line.split("=")[1].strip()
-        version = version.strip('"')
-        version = version.strip("'")
-        continue
+from shapely import __version__ as version
 
-open('VERSION.txt', 'wb').write(version)
+open('VERSION.txt', 'w').write(version)
 
-readme_text = open('README.rst', 'rb').read()
+readme_text = open('README.rst', 'r').read()
 readme_text = readme_text.replace(".. include:: CREDITS.txt", "")
 
-f = open('CREDITS.txt', 'rb')
+f = open('CREDITS.txt', 'r')
 credits = f.read()
 
-f = open('CHANGES.txt', 'rb')
+f = open('CHANGES.txt', 'r')
 changes_text = f.read()
 
 setup_args = dict(
@@ -72,7 +66,7 @@ setup_args = dict(
 if sys.platform == 'win32':
     try:
         os.mkdir('shapely/DLLs')
-    except OSError, ex:
+    except OSError as ex:
         if ex.errno != errno.EEXIST: raise
     if '(AMD64)' in sys.version:
         for dll in glob.glob('DLLs_AMD64_VC9/*.dll'):
@@ -108,13 +102,13 @@ class build_ext(distutils_build_ext):
     def run(self):
         try:
             distutils_build_ext.run(self)
-        except DistutilsPlatformError, x:
+        except DistutilsPlatformError as x:
             raise BuildFailed(x)
 
     def build_extension(self, ext):
         try:
             distutils_build_ext.build_extension(self, ext)
-        except ext_errors, x:
+        except ext_errors as x:
             raise BuildFailed(x)
 
 if (hasattr(platform, 'python_implementation')
@@ -137,15 +131,16 @@ if os.path.exists("MANIFEST.in"):
 
     try:
         if (force_cython or not os.path.exists(c_file)
-            or os.path.getmtime(pyx_file) > os.path.getmtime(c_file)):
-            print >>sys.stderr, "Updating C extension with Cython."
+             or os.path.getmtime(pyx_file) > os.path.getmtime(c_file)):
+            print("Updating C extension with Cython.", file=sys.stderr)
             subprocess.check_call(["cython", "shapely/speedups/_speedups.pyx"])
     except (subprocess.CalledProcessError, OSError):
-        print >>sys.stderr, "Warning: Could not (re)create C extension with Cython."
+        print("Warning: Could not (re)create C extension with Cython.",
+              file=sys.stderr)
         if force_cython:
             raise
     if not os.path.exists("shapely/speedups/_speedups.c"):
-        print >>sys.stderr, "Warning: speedup extension not found"
+        print("Warning: speedup extension not found", file=sys.stderr)
 
 ext_modules = [
     Extension(
@@ -160,15 +155,14 @@ try:
         ext_modules=ext_modules,
         **setup_args
     )
-except BuildFailed, ex:
+except BuildFailed as ex:
     BUILD_EXT_WARNING = "Warning: The C extension could not be compiled, speedups are not enabled."
-    print ex
-    print BUILD_EXT_WARNING
-    print "Failure information, if any, is above."
-    print "I'm retrying the build without the C extension now."
+    print(ex)
+    print(BUILD_EXT_WARNING)
+    print("Failure information, if any, is above.")
+    print("I'm retrying the build without the C extension now.")
 
     setup(**setup_args)
 
-    print BUILD_EXT_WARNING
-    print "Plain-Python installation succeeded."
-
+    print(BUILD_EXT_WARNING)
+    print("Plain-Python installation succeeded.")
