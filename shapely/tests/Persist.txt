@@ -18,8 +18,6 @@ WKB
   >>> from shapely import wkb
   >>> bytes = wkb.dump_bytes(p)
   >>> pb = wkb.load_bytes(bytes)
-
-TODO: Add back dumps and loads but deprecate them
   >>> pb.equals(p)
   True
 
