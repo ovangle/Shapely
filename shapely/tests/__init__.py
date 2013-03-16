@@ -22,7 +22,8 @@ from shapely.tests import (
     test_ndarrays, 
     test_unary_union, 
     test_pickle, 
-    test_affinity )
+    test_affinity,
+    test_transform )
 
 def test_suite():
     suite = TestSuite()
@@ -48,5 +49,6 @@ def test_suite():
     suite.addTest(test_unary_union.test_suite())
     suite.addTest(test_pickle.test_suite())
     suite.addTest(test_affinity.test_suite())
+    suite.addTest(test_transform.test_suite())
     return suite
 

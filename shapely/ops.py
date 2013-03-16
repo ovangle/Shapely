@@ -2,7 +2,7 @@
 """
 
 from ctypes import byref, c_void_p
-from itertools import izip
+from itertools import starmap
 
 from shapely.geos import lgeos
 from shapely.geometry.base import geom_factory, BaseGeometry
@@ -139,6 +139,9 @@ def transform(func, geom):
     """
 
     if geom.type in ('Point', 'LineString', 'Polygon'):
+        # Applies the tranformation function to the coordinate list of the
+        # geometry
+        transform_coords = lambda geom: func(*zip(*geom.coords)) 
         
         # First we try to apply func to x, y, z sequences. When func is
         # optimized for sequences, this is the fastest, though zipping
@@ -146,25 +149,32 @@ def transform(func, geom):
         # extra cost.
         try:
             if geom.type in ('Point', 'LineString'):
-                return type(geom)(zip(*func(*zip(*geom.coords))))
+                return type(geom)(list(zip(*transform_coords(geom))))
             elif geom.type == 'Polygon':
                 shell = type(geom.exterior)(
-                    zip(*func(*zip(*geom.exterior.coords))))
-                holes = list(type(ring)(zip(*func(*zip(*ring.coords)))) for 
-                    ring in geom.interiors)
+                    list(zip(*transform_coords(geom.exterior))))
+                holes = list(
+                    type(ring)(list(zip(*transform_coords(ring)))) 
+                               for ring in geom.interiors)
                 return type(geom)(shell, holes)
         
         # A func that assumes x, y, z are single values will likely raise a
         # TypeError, in which case we'll try again.
         except TypeError:
+            ## Rather than applying f to the list, apply it individually
+            ## to each coordinate
+            transform_coords = lambda geom: list(starmap(func, geom.coords))
+
             if geom.type in ('Point', 'LineString'):
-                return type(geom)([func(*c) for c in geom.coords])
+                return type(geom)(transform_coords(geom))
             elif geom.type == 'Polygon':
-                shell = type(geom.exterior)(
-                    [func(*c) for c in geom.exterior.coords])
-                holes = list(type(ring)(
-                    [func(*c) for c in ring.coords]) for 
-                        ring in geom.interiors)
+                shell = type(geom.exterior)(transform_coords(geom.exterior))
+                if not geom.interiors:
+                    holes = []
+                else:
+                    ring_type = type(next(geom.interiors))
+                    holes = list(type(ring_type)(
+                            [transform_coords(ring) for ring in geom.interiors])) 
                 return type(geom)(shell, holes)
     
     elif geom.type.startswith('Multi') or geom.type == 'GeometryCollection':
