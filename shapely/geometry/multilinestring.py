@@ -96,7 +96,7 @@ def geos_multilinestring_from_py(ob):
         # Array of pointers to sub-geometries
         subs = (c_void_p * L)()
 
-        for l in xrange(L):
+        for l in range(L):
             geom, ndims = geos_linestring_from_py(array['data'][l])
             subs[i] = cast(geom, c_void_p)
         N = lgeos.GEOSGeom_getDimensions(subs[0])
@@ -115,7 +115,7 @@ def geos_multilinestring_from_py(ob):
         subs = (c_void_p * L)()
         
         # add to coordinate sequence
-        for l in xrange(L):
+        for l in range(L):
             geom, ndims = geos_linestring_from_py(obs[l])
             subs[l] = cast(geom, c_void_p)
             

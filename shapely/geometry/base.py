@@ -4,6 +4,7 @@
 from ctypes import pointer, c_size_t, c_char_p, c_void_p
 import sys
 import warnings
+import binascii
 
 from shapely.coords import CoordinateSequence
 from shapely.ftools import wraps
@@ -49,18 +50,26 @@ def geom_factory(g, parent=None):
     return ob
 
 def geom_from_wkt(data):
+    ## We expect an ascii encoded string (because C)
+    assert isinstance(data, str)
+    try:
+        data = data.encode('ascii')
+    except UnicodeDecodeError:
+        raise Exception('Not an ascii encoded string: {}'.format(data))
     geom = lgeos.GEOSGeomFromWKT(c_char_p(data))
     if not geom:
-        raise ReadingError, \
-        "Could not create geometry because of errors while reading input."
+        raise ReadingError(
+        "Could not create geometry because of errors while reading input.")
     return geom_factory(geom)
 
 def geom_to_wkt(ob):
     if ob is None or ob._geom is None:
         raise ValueError("Null geometry supports no operations")
-    return lgeos.GEOSGeomToWKT(ob._geom)
+    wkt = lgeos.GEOSGeomToWKT(ob._geom)
+    return wkt.decode('ascii')
 
 def deserialize_wkb(data):
+    assert(not isinstance(data, str))
     geom = lgeos.GEOSGeomFromWKB_buf(c_char_p(data), c_size_t(len(data)));
     if not geom:
         raise ReadingError(
@@ -85,7 +94,7 @@ def exceptNull(func):
         return func(*args, **kwargs)
     return wrapper
 
-EMPTY = deserialize_wkb('010700000000000000'.decode('hex'))
+EMPTY = deserialize_wkb(binascii.unhexlify(b'010700000000000000'))
 
 class BaseGeometry(object):
     """
@@ -411,7 +420,7 @@ class BaseGeometry(object):
     def relate(self, other):
         """Returns the DE-9IM intersection matrix for the two geometries
         (string)"""
-        return self.impl['relate'](self, other)
+        return self.impl['relate'](self, other).decode('ascii')
 
     def contains(self, other):
         """Returns True if the geometry contains the other, else False"""
@@ -580,7 +589,7 @@ class GeometrySequence(object):
 
     def __iter__(self):
         self._update()
-        for i in xrange(self.__len__()):
+        for i in range(self.__len__()):
             yield self._get_geom_item(i)
 
     def __len__(self):
@@ -604,7 +613,7 @@ class GeometrySequence(object):
                     "Heterogenous geometry collections are not sliceable")
             res = []
             start, stop, stride = key.indices(m)
-            for i in xrange(start, stop, stride):
+            for i in range(start, stop, stride):
                 res.append(self._get_geom_item(i))
             return type(self.__p__)(res or None)
         else:

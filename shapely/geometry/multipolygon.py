@@ -114,7 +114,7 @@ def geos_multipolygon_from_py(ob):
     assert N == 2 or N == 3
 
     subs = (c_void_p * L)()
-    for l in xrange(L):
+    for l in range(L):
         geom, ndims = geos_polygon_from_py(ob[l][0], ob[l][1:])
         subs[l] = cast(geom, c_void_p)
             
@@ -133,7 +133,7 @@ def geos_multipolygon_from_polygons(ob):
     assert N == 2 or N == 3
 
     subs = (c_void_p * L)()
-    for l in xrange(L):
+    for l in range(L):
         shell = getattr(obs[l], 'exterior', None)
         if shell is None:
             shell = obs[l][0]

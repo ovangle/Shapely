@@ -2,12 +2,12 @@
 Geometry factories based on the geo interface
 """
 
-from point import Point, asPoint
-from linestring import LineString, asLineString
-from polygon import Polygon, asPolygon
-from multipoint import MultiPoint, asMultiPoint
-from multilinestring import MultiLineString, asMultiLineString
-from multipolygon import MultiPolygon, MultiPolygonAdapter
+from shapely.geometry.point import Point, asPoint
+from shapely.geometry.linestring import LineString, asLineString
+from shapely.geometry.polygon import Polygon, asPolygon
+from shapely.geometry.multipoint import MultiPoint, asMultiPoint
+from shapely.geometry.multilinestring import MultiLineString, asMultiLineString
+from shapely.geometry.multipolygon import MultiPolygon, MultiPolygonAdapter
 
 
 def box(minx, miny, maxx, maxy, ccw=True):

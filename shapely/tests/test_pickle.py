@@ -1,4 +1,4 @@
-from cPickle import dumps, loads, HIGHEST_PROTOCOL
+from pickle import dumps, loads, HIGHEST_PROTOCOL
 import unittest
 from shapely import geometry
 

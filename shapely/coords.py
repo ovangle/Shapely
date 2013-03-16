@@ -69,7 +69,7 @@ class CoordinateSequence(object):
         dy = c_double()
         dz = c_double()
         has_z = self._ndim == 3
-        for i in xrange(self.__len__()):
+        for i in range(self.__len__()):
             lgeos.GEOSCoordSeq_getX(self._cseq, i, byref(dx))
             lgeos.GEOSCoordSeq_getY(self._cseq, i, byref(dy))
             if has_z:
@@ -102,7 +102,7 @@ class CoordinateSequence(object):
         elif isinstance(key, slice):
             res = []
             start, stop, stride = key.indices(m)
-            for i in xrange(start, stop, stride):
+            for i in range(start, stop, stride):
                 lgeos.GEOSCoordSeq_getX(self._cseq, i, byref(dx))
                 lgeos.GEOSCoordSeq_getY(self._cseq, i, byref(dy))
                 if has_z:
@@ -123,7 +123,7 @@ class CoordinateSequence(object):
         array_type = c_double * (m * n)
         data = array_type()
         temp = c_double()
-        for i in xrange(m):
+        for i in range(m):
             lgeos.GEOSCoordSeq_getX(self._cseq, i, byref(temp))
             data[n*i] = temp.value
             lgeos.GEOSCoordSeq_getY(self._cseq, i, byref(temp))
@@ -160,7 +160,7 @@ class CoordinateSequence(object):
         x = array('d')
         y = array('d')
         temp = c_double()
-        for i in xrange(m):
+        for i in range(m):
             lgeos.GEOSCoordSeq_getX(self._cseq, i, byref(temp))
             x.append(temp.value)
             lgeos.GEOSCoordSeq_getY(self._cseq, i, byref(temp))
@@ -186,7 +186,7 @@ class BoundsOp(Validating):
         miny = 1.e+20
         maxy = -1e+20
         temp = c_double()
-        for i in xrange(cs_len.value):
+        for i in range(cs_len.value):
             lgeos.GEOSCoordSeq_getX(cs, i, byref(temp))
             x = temp.value
             if x < minx: minx = x

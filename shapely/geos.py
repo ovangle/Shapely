@@ -11,8 +11,10 @@ import ctypes
 from ctypes import cdll, CDLL, CFUNCTYPE, c_char_p, c_void_p, string_at
 from ctypes.util import find_library
 
-import ftools
-from ctypes_declarations import prototype, EXCEPTION_HANDLER_FUNCTYPE
+from shapely import ftools
+from shapely.ctypes_declarations import (
+    prototype, 
+    EXCEPTION_HANDLER_FUNCTYPE )
 
 
 
@@ -95,7 +97,7 @@ def _geos_c_version():
     func.argtypes = []
     func.restype = c_char_p
     v = func()
-    c_ver = v.split('-')[2]
+    c_ver = v.decode(encoding="ascii").split('-')[2]
     # Ditch any SVN revision numbering that may have crept in without (ftm)
     # importing `re`.
     c_ver = c_ver.split()[0]

@@ -63,8 +63,10 @@ Ring Access
   >>> data = polygon.wkb
   >>> polygon = None
   >>> ring = None
-  >>> from shapely.wkb import loads
-  >>> polygon = loads(data)
+  >>> from shapely.wkb import load_bytes
+  >>> polygon = load_bytes(data)
+
+TODO: we need to restore the old loads test too.
   >>> ring = polygon.exterior
   >>> len(ring.coords)
   5
@@ -131,7 +133,7 @@ Test Non-operability of Null rings
 Check that we can set coordinates of a null geometry
 
   >>> r_null.coords = [(0, 0), (1, 1), (1, 0)]
-  >>> print r_null.length # doctest: +ELLIPSIS
+  >>> print(r_null.length) # doctest: +ELLIPSIS
   3.414...
 
 Error handling

@@ -3,6 +3,7 @@
 # Requires numpy.
 
 import unittest
+from functools import reduce
 from shapely import geometry
 import numpy
 

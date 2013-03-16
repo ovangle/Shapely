@@ -5,8 +5,10 @@ from shapely.geometry.base import geom_from_wkb, geom_to_wkb
 
 # Pickle-like convenience functions
 
-def loads(data):
-    """Load a geometry from a WKB string."""
+##TODO: Restore loads and dumps
+
+def load_bytes(data):
+    """Load a geometry from a WKB bytes object."""
     return geom_from_wkb(data)
 
 def load(fp):
@@ -14,7 +16,7 @@ def load(fp):
     data = fp.read()
     return loads(data)
 
-def dumps(ob):
+def dump_bytes(ob):
     """Dump a WKB representation of a geometry to a byte string."""
     return geom_to_wkb(ob)
 

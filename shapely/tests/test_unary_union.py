@@ -4,14 +4,18 @@ from shapely.geometry import Point
 from shapely.ops import unary_union
 
 def halton(base):
-    """Returns an iterator over an infinite Halton sequence"""
+    """Returns an iterator over an infinite Halton sequence
+       See http://en.wikipedia.org/wiki/Halton_sequence
+    """
     def value(index):
         result = 0.0
         f = 1.0/base
         i = index
         while i > 0:
             result += f * (i % base)
-            i = i/base
+            ## py3k: Need floor division here
+            i = i//base 
+
             f = f/base
         return result
     i = 1

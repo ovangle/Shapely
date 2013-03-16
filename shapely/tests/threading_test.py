@@ -15,21 +15,21 @@ def main():
             t.join()
         
 def runShapelyBuilding(num):
-    print "%s: Running shapely tests on wkb" % num
+    print("%s: Running shapely tests on wkb" % num)
     import shapely.geos
-    print "%s GEOS Handle: %s" % (num, shapely.geos.lgeos.geos_handle)
+    print("%s GEOS Handle: %s" % (num, shapely.geos.lgeos.geos_handle))
     import shapely.wkt
     import shapely.wkb
     p = shapely.wkt.loads("POINT (0 0)")
-    print "%s WKT: %s" % (num, shapely.wkt.dumps(p))
+    print("%s WKT: %s" % (num, shapely.wkt.dumps(p)))
     wkb = shapely.wkb.dumps(p)
-    print "%s WKB: %s" % (num, wkb.encode('hex'))
+    print("%s WKB: %s" % (num, wkb.encode('hex')))
     
-    for i in xrange(10):
+    for i in range(10):
         obj = shapely.wkb.loads(wkb)
     
-    print "%s GEOS Handle: %s" % (num, shapely.geos.lgeos.geos_handle)
-    print "Done %s" % num
+    print("%s GEOS Handle: %s" % (num, shapely.geos.lgeos.geos_handle))
+    print("Done %s" % num)
     
 # Run main
 if __name__ == '__main__':
